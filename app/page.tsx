@@ -1,7 +1,9 @@
+import { HeroSection } from "@/app/(home-page)/_components/hero-section/hero-section"
+
 export default function Page() {
   return (
     <>
-      <p className="text-2xl font-bold">Next is running..</p>
+      <HeroSection />
     </>
   )
 }
