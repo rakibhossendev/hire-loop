@@ -6,7 +6,7 @@ import Link from "next/link"
 import { useState } from "react"
 
 import { Button } from "@/components/ui/button"
-import logo from "@/app/assetes/logo.png"
+import logo from "@/app/assets/logo.png"
 
 const navLinks = [
   { label: "Browse Jobs", href: "#" },
