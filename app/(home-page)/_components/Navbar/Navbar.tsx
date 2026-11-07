@@ -7,6 +7,8 @@ import { useState } from "react"
 
 import { Button } from "@/components/ui/button"
 import logo from "@/app/assets/logo.png"
+import { useSession } from "@/lib/auth-client"
+import { UserProfile } from "./UserProfile"
 
 const navLinks = [
   { label: "Browse Jobs", href: "#" },
@@ -33,6 +35,35 @@ function NavLinks({ className = "" }: { className?: string }) {
   )
 }
 
+function AuthArea({ onNavigate }: { onNavigate?: () => void }) {
+  const { data: session } = useSession()
+  const user = session?.user
+
+  if (user) {
+    return <UserProfile user={user} />
+  }
+
+  return (
+    <>
+      <Link
+        href="/sign-in"
+        onClick={onNavigate}
+        className="text-sm font-medium text-brand hover:underline"
+      >
+        Sign In
+      </Link>
+      <Button
+        size="lg"
+        nativeButton={false}
+        render={<Link href="/sign-up" onClick={onNavigate} />}
+        className="bg-brand text-brand-foreground hover:bg-brand/90"
+      >
+        Get Started
+      </Button>
+    </>
+  )
+}
+
 export function Navbar() {
   const [open, setOpen] = useState(false)
 
@@ -53,18 +84,7 @@ export function Navbar() {
         <div className="hidden items-center gap-5 md:flex">
           <NavLinks className="flex items-center gap-6" />
           <div className="flex items-center gap-4">
-            <Link
-              href="#"
-              className="text-sm font-medium text-brand hover:underline"
-            >
-              Sign In
-            </Link>
-            <Button
-              size="lg"
-              className="bg-brand text-brand-foreground hover:bg-brand/90"
-            >
-              Get Started
-            </Button>
+            <AuthArea />
           </div>
         </div>
 
@@ -103,20 +123,7 @@ export function Navbar() {
           </nav>
           <span className="h-px w-full bg-border" aria-hidden="true" />
           <div className="flex items-center justify-between gap-4">
-            <Link
-              href="#"
-              onClick={() => setOpen(false)}
-              className="text-sm font-medium text-brand hover:underline"
-            >
-              Sign In
-            </Link>
-            <Button
-              size="lg"
-              onClick={() => setOpen(false)}
-              className="bg-brand text-brand-foreground hover:bg-brand/90"
-            >
-              Get Started
-            </Button>
+            <AuthArea onNavigate={() => setOpen(false)} />
           </div>
         </div>
       )}
