@@ -3,37 +3,50 @@ import { Briefcase } from "lucide-react"
 import { HeroSearch } from "./hero-search"
 
 export function HeroSection() {
-  return (
-    <section className="dark mt-4 overflow-hidden rounded-2xl bg-background text-foreground">
-      <div className="px-4 pt-10 pb-6 md:pt-16">
-        <div className="flex items-center justify-center gap-4">
-          <span
-            className="hidden h-px flex-1 bg-border sm:block"
-            aria-hidden="true"
-          />
-          <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 rounded-full border border-border bg-card px-4 py-2">
-            <Briefcase className="size-4 text-orange-500" aria-hidden="true" />
-            <span className="text-sm font-bold">50,000+</span>
-            <span className="font-mono text-xs tracking-widest text-muted-foreground uppercase">
-              New jobs this month
-            </span>
-          </div>
-          <span
-            className="hidden h-px flex-1 bg-border sm:block"
-            aria-hidden="true"
-          />
+return (
+  <section className="relative mt-4 overflow-hidden rounded-2xl border bg-background text-foreground">
+    {/* Subtle background decoration */}
+    <div className="pointer-events-none absolute inset-0">
+      <div className="absolute -top-32 left-1/2 h-80 w-80 -translate-x-1/2 rounded-full bg-primary/10 blur-[100px]" />
+    </div>
+
+    <div className="relative px-5 py-16 sm:px-8 md:py-24">
+      <div className="mx-auto max-w-3xl text-center">
+
+        {/* Small label */}
+        <div className="mb-7 inline-flex items-center gap-2 rounded-full border bg-card/80 px-3.5 py-1.5 text-xs font-medium text-muted-foreground">
+          <span className="relative flex size-2">
+            <span className="absolute inline-flex size-full animate-ping rounded-full bg-emerald-500 opacity-50" />
+            <span className="relative inline-flex size-2 rounded-full bg-emerald-500" />
+          </span>
+          Your next opportunity starts here
         </div>
 
-        <h1 className="mt-6 text-center text-4xl font-bold tracking-tight md:text-5xl lg:text-6xl">
-          Find Your Dream Job Today
+        {/* Heading */}
+        <h1 className="text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
+          Find work that
+          <br />
+          <span className="text-primary">moves you forward.</span>
         </h1>
-        <p className="mx-auto mt-4 max-w-2xl text-center text-sm text-muted-foreground md:text-base">
-          HireLoop connects top talent with world-class companies. Browse
-          thousands of curated opportunities and land your next role — faster.
+
+        {/* Description */}
+        <p className="mx-auto mt-6 max-w-xl text-sm leading-7 text-muted-foreground sm:text-base">
+          Discover opportunities that match your skills, explore
+          exciting companies, and take the next step in your career.
         </p>
 
-        <HeroSearch />
+        {/* Search */}
+        <div className="mt-10">
+          <HeroSearch />
+        </div>
+
+        {/* Supporting text */}
+        <p className="mt-5 text-xs text-muted-foreground">
+          Explore opportunities across different industries and career levels.
+        </p>
       </div>
-    </section>
-  )
+    </div>
+  </section>
+);
+
 }
