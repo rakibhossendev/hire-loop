@@ -2,12 +2,9 @@
 
 import Link from "next/link"
 import { ArrowLeftIcon, Building2Icon, MapPinIcon } from "lucide-react"
-import { cn } from "cn"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent} from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import {
     Select,
     SelectContent,
@@ -18,6 +15,9 @@ import {
 import { Switch } from "@/components/ui/switch"
 import { Textarea } from "@/components/ui/textarea"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
+import { useState } from "react"
+import SectionHeading from "../../_components/recruiter/sectiohHeading"
+import Field from "../../_components/recruiter/Feild"
 
 const JOB_CATEGORIES: Record<string, string> = {
     "engineering-tech": "Engineering & Tech",
@@ -45,51 +45,33 @@ const SALARY_FREQUENCIES: Record<string, string> = {
     year: "per year",
 }
 
-function SectionHeading({ step, title }: { step: number; title: string }) {
-    return (
-        <CardHeader>
-            <div className="flex items-center gap-3">
-                <Badge className="size-6 rounded-md bg-brand px-0 text-brand-foreground">
-                    {step}
-                </Badge>
-                <CardTitle className="text-lg">{title}</CardTitle>
-            </div>
-        </CardHeader>
-    )
-}
-
-function Field({
-    label,
-    htmlFor,
-    required,
-    hint,
-    children,
-    className,
-}: {
-    label: string
-    htmlFor?: string
-    required?: boolean
-    hint?: string
-    children: React.ReactNode
-    className?: string
-}) {
-    return (
-        <div className={cn("flex flex-col gap-1.5", className)}>
-            <Label htmlFor={htmlFor} className="gap-1">
-                {label}
-                {required ? <span className="text-destructive">*</span> : null}
-            </Label>
-            {children}
-            {hint ? (
-                <p className="text-xs text-muted-foreground">{hint}</p>
-            ) : null}
-        </div>
-    )
-}
 
 export default function CreateJobPage() {
+    const [ remoteAllowed, setRemoteAllowed ] = useState<boolean>(true);
+    const [jobType,setJobType] = useState<string>("full-time");
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        const formData = new FormData(e.currentTarget);
+        
+        const values = {
+            jobTitle: formData.get('jobTitle') as string,
+            company: formData.get('company') as string,
+            jobCategory: formData.get('jobCategory') as string,
+            jobType: jobType as string,
+            remoteAllowed: remoteAllowed,
+            jobLocation: formData.get('jobLocation') as string,
+            deadline: formData.get('deadline') as string,
+            minSalary: formData.get('minSalary') as string,
+            maxSalary: formData.get('maxSalary') as string,
+            salaryFrequency: formData.get('salaryFrequency') as string,
+            responsibilities: formData.get('responsibilities') as string,
+            requirements: formData.get('requirements') as string,
+        };
+
+        console.log('Submitted Job Values:', values);
+    };
     return (
-        <div className="mx-auto flex w-full max-w-4xl flex-col gap-6">
+        <form onSubmit={handleSubmit} className="mx-auto flex w-full max-w-4xl flex-col gap-6">
             {/* Page header */}
             <div className="flex flex-col gap-1.5">
                 <Link
@@ -114,9 +96,10 @@ export default function CreateJobPage() {
                     <Field label="Job title" htmlFor="job-title">
                         <Input
                             id="job-title"
-                            defaultValue="My New Job"
+                            name="jobTitle"
                             placeholder="e.g. Senior Frontend Developer"
                             className="h-10"
+                            required
                         />
                     </Field>
 
@@ -126,15 +109,18 @@ export default function CreateJobPage() {
                                 <Building2Icon className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
                                 <Input
                                     id="company-name"
-                                    defaultValue="Tom tom company"
+                                    name="company"
                                     placeholder="e.g. Acme Inc."
                                     className="h-10 pl-9"
+                                    required
                                 />
                             </div>
                         </Field>
 
                         <Field label="Job category" htmlFor="job-category">
+                            {/* Hidden input to pass value if using custom Select component */}
                             <Select
+                                name="jobCategory"
                                 items={JOB_CATEGORIES}
                                 defaultValue="engineering-tech"
                             >
@@ -146,7 +132,7 @@ export default function CreateJobPage() {
                                 </SelectTrigger>
                                 <SelectContent>
                                     {Object.entries(JOB_CATEGORIES).map(
-                                        ([value, label]) => (
+                                        ([ value, label ]) => (
                                             <SelectItem
                                                 key={value}
                                                 value={value}
@@ -162,13 +148,15 @@ export default function CreateJobPage() {
 
                     <Field label="Job type">
                         <ToggleGroup
-                            defaultValue={["full-time"]}
+                    // Adjust depending on your ToggleGroup primitive implementation
+                            
                             className="w-full grid grid-cols-2 gap-2 sm:grid-cols-4"
                         >
                             {JOB_TYPES.map((type) => (
                                 <ToggleGroupItem
                                     key={type.value}
                                     value={type.value}
+                                    onClick={() => setJobType(type.value)}
                                     variant="outline"
                                     className="h-10 w-full aria-pressed:border-brand aria-pressed:bg-brand/10 aria-pressed:hover:bg-brand/15"
                                 >
@@ -198,7 +186,9 @@ export default function CreateJobPage() {
                             </p>
                         </div>
                         <Switch
-                            defaultChecked
+                            name="remoteAllowed"
+                            checked={remoteAllowed}
+                            onCheckedChange={setRemoteAllowed}
                             aria-label="Remote work allowed"
                             className="shrink-0"
                         />
@@ -215,9 +205,10 @@ export default function CreateJobPage() {
                                 <MapPinIcon className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
                                 <Input
                                     id="job-location"
-                                    defaultValue="Dhaka"
+                                    name="jobLocation"
                                     placeholder="e.g. Dhaka"
                                     className="h-10 pl-9"
+                                    required
                                 />
                             </div>
                         </Field>
@@ -229,7 +220,7 @@ export default function CreateJobPage() {
                             <Input
                                 id="deadline"
                                 type="date"
-                                defaultValue="2026-04-12"
+                                name="deadline"
                                 className="h-10 [color-scheme:light] dark:[color-scheme:dark]"
                             />
                         </Field>
@@ -240,7 +231,7 @@ export default function CreateJobPage() {
                             <Input
                                 id="min-salary"
                                 type="number"
-                                defaultValue={19000}
+                                name="minSalary"
                                 placeholder="e.g. 19000"
                                 className="h-10"
                             />
@@ -250,7 +241,7 @@ export default function CreateJobPage() {
                             <Input
                                 id="max-salary"
                                 type="number"
-                                defaultValue={25000}
+                                name="maxSalary"
                                 placeholder="e.g. 25000"
                                 className="h-10"
                             />
@@ -262,8 +253,9 @@ export default function CreateJobPage() {
                             className="sm:col-span-2 lg:col-span-1"
                         >
                             <Select
+                                name="salaryFrequency"
                                 items={SALARY_FREQUENCIES}
-                                defaultValue="month"
+                                defaultValue="monthly"
                             >
                                 <SelectTrigger
                                     id="salary-frequency"
@@ -273,7 +265,7 @@ export default function CreateJobPage() {
                                 </SelectTrigger>
                                 <SelectContent>
                                     {Object.entries(SALARY_FREQUENCIES).map(
-                                        ([value, label]) => (
+                                        ([ value, label ]) => (
                                             <SelectItem
                                                 key={value}
                                                 value={value}
@@ -303,6 +295,7 @@ export default function CreateJobPage() {
                     >
                         <Textarea
                             id="responsibilities"
+                            name="responsibilities"
                             placeholder={
                                 "• Lead the design and delivery of new product features\n• Collaborate with design and backend teams\n• Review code and mentor junior engineers"
                             }
@@ -317,6 +310,7 @@ export default function CreateJobPage() {
                     >
                         <Textarea
                             id="requirements"
+                            name="requirements"
                             placeholder={
                                 "• 4+ years of professional software development\n• Strong proficiency in React and TypeScript\n• Experience with modern CSS and accessibility"
                             }
@@ -336,12 +330,12 @@ export default function CreateJobPage() {
                     Save as draft
                 </Button>
                 <Button
-                    type="button"
+                    type="submit"
                     className="h-10 w-full bg-brand text-brand-foreground hover:bg-brand/90 sm:w-auto sm:px-6"
                 >
                     Publish job
                 </Button>
             </div>
-        </div>
+        </form>
     )
 }

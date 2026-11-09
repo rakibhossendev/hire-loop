@@ -65,7 +65,8 @@ function AuthArea({ onNavigate }: { onNavigate?: () => void }) {
 }
 
 export function Navbar() {
-  const [open, setOpen] = useState(false)
+  const [ open, setOpen ] = useState(false);
+  const { data: session } = useSession();
 
   return (
     <header className="mx-auto mt-4 w-full max-w-7xl px-4">
@@ -110,6 +111,11 @@ export function Navbar() {
           className="mt-2 flex flex-col gap-4 rounded-xl border border-border bg-card px-6 py-4 md:hidden"
         >
           <nav className="flex flex-col gap-3">
+            {
+              session?.user &&
+              <Link href={`/${session?.user.role}`} className="text-sm text-muted-foreground transition-colors hover:text-foreground">Dashboard</Link>
+
+            }
             {navLinks.map((link) => (
               <Link
                 key={link.label}

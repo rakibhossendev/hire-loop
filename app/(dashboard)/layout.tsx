@@ -1,6 +1,6 @@
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
-import { DashboardSidebar } from "./_components/DashboardSidebar"
-import { DashboardTopbar } from "./_components/DashboardTopbar"
+import { DashboardSidebar } from "./_components/common/DashboardSidebar"
+import { DashboardTopbar } from "./_components/common/DashboardTopbar"
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
