@@ -3,6 +3,7 @@ export type JobType = 'full-time' | 'part-time' | 'contract' | 'internship';
 export type SalaryFrequency = 'hourly' | 'monthly' | 'yearly';
 
 export interface CreateJobFormValues {
+    recruiterEmail: string;
     jobTitle: string;
     company: string;
     jobCategory: string;
@@ -15,4 +16,9 @@ export interface CreateJobFormValues {
     salaryFrequency: SalaryFrequency;
     responsibilities: string;
     requirements: string;
+}
+
+export interface APIresponseType{
+    success: boolean;
+    data?: CreateJobFormValues
 }

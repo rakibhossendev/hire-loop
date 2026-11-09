@@ -18,6 +18,10 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import { useState } from "react"
 import SectionHeading from "../../_components/recruiter/sectiohHeading"
 import Field from "../../_components/recruiter/Feild"
+import { useSession } from "@/lib/auth-client"
+import { createJobs } from "@/lib/actions/jobs"
+import { JobType, SalaryFrequency } from "@/Typescript/mai"
+import { useRouter } from "next/navigation"
 
 const JOB_CATEGORIES: Record<string, string> = {
     "engineering-tech": "Engineering & Tech",
@@ -47,28 +51,37 @@ const SALARY_FREQUENCIES: Record<string, string> = {
 
 
 export default function CreateJobPage() {
+    const {data: session} = useSession()
+    const router = useRouter()
     const [ remoteAllowed, setRemoteAllowed ] = useState<boolean>(true);
     const [jobType,setJobType] = useState<string>("full-time");
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         const formData = new FormData(e.currentTarget);
         
         const values = {
+            recruiterEmail: session?.user.email as string,
             jobTitle: formData.get('jobTitle') as string,
             company: formData.get('company') as string,
             jobCategory: formData.get('jobCategory') as string,
-            jobType: jobType as string,
+            jobType: jobType as JobType,
             remoteAllowed: remoteAllowed,
             jobLocation: formData.get('jobLocation') as string,
             deadline: formData.get('deadline') as string,
             minSalary: formData.get('minSalary') as string,
             maxSalary: formData.get('maxSalary') as string,
-            salaryFrequency: formData.get('salaryFrequency') as string,
+            salaryFrequency: formData.get('salaryFrequency') as SalaryFrequency,
             responsibilities: formData.get('responsibilities') as string,
             requirements: formData.get('requirements') as string,
         };
 
-        console.log('Submitted Job Values:', values);
+        const data = await createJobs(values)
+        if(!data.success){
+            alert("Something wrong")
+        }
+        alert("Jobs added successfully");
+        router.push("/recruiter")
     };
     return (
         <form onSubmit={handleSubmit} className="mx-auto flex w-full max-w-4xl flex-col gap-6">
