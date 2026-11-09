@@ -1,7 +1,6 @@
 import { Geist, Geist_Mono } from "next/font/google"
 
 import "./globals.css"
-import { Navbar } from "@/app/(home-page)/_components/Navbar/Navbar"
 import { ThemeProvider } from "@/components/theme-provider"
 import { cn } from "@/lib/utils"
 
@@ -29,12 +28,7 @@ export default function RootLayout({
       )}
     >
       <body>
-        <ThemeProvider>
-          <Navbar />
-          <main className="mx-auto w-full max-w-7xl px-4 pb-16">
-            {children}
-          </main>
-        </ThemeProvider>
+        <ThemeProvider>{children}</ThemeProvider>
       </body>
     </html>
   )
