@@ -11,7 +11,7 @@ import { useSession } from "@/lib/auth-client"
 import { UserProfile } from "./UserProfile"
 
 const navLinks = [
-  { label: "Browse Jobs", href: "#" },
+  { label: "Browse Jobs", href: "/browse-jobs" },
   { label: "Company", href: "#" },
   { label: "Pricing", href: "#" },
 ]
