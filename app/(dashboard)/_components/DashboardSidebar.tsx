@@ -120,7 +120,7 @@ const secondaryMenuItems: Record<Role, MenuItem[]> = {
     },
     {
       name: "Create Jobs",
-      url: "/new",
+      url: "/recruiter/new",
       icon: PencilIcon,
     },
     {
