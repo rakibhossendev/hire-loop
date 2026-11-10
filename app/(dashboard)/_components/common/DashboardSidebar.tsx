@@ -115,7 +115,7 @@ const secondaryMenuItems: Record<Role, MenuItem[]> = {
   recruiter: [
     {
       name: "Manage Jobs",
-      url: "/recruiter/jobs",
+      url: "/recruiter/manage-jobs",
       icon: Briefcase,
     },
     {
