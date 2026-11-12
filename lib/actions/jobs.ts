@@ -1,6 +1,5 @@
-import { APIresponseType, CreateJobFormValues } from "@/Typescript/mai"
+import { APIresponseType, CreateJobFormValues } from "@/Typescript/main"
 
-console.log(process.env.NEXT_PUBLIC_API_BASE_URL)
 export const createJobs = async (data: CreateJobFormValues): Promise<APIresponseType> => {
     const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/create-jobs`,{
         method: "POST",

@@ -1,64 +1,34 @@
-"use client"
-import {
-    PlusIcon,
-    UsersIcon,
-    MapPinIcon,
-    Building2Icon,
-    CalendarDaysIcon,
-} from "lucide-react"
 
-import { Badge } from "@/components/ui/badge"
+import { PlusIcon, Building2Icon } from "lucide-react"
+import Link from "next/link"
+import { redirect } from "next/navigation"
+
 import { Button } from "@/components/ui/button"
+import { getJobs } from "@/lib/actions/getJobs"
+import type { ManageJobPost } from "@/Typescript/main"
+import { auth } from "@/lib/auth"
 
-import {
-    mockJobPosts,
-    type ManageJobPost,
-} from "./data"
-import ActionButtons from "../../_components/recruiter/manage-jobs/action-button"
-import StatusBadge from "../../_components/recruiter/manage-jobs/StatusBadge"
+import { headers } from "next/headers"
+
 import JobAvatar from "../../_components/recruiter/manage-jobs/Job-avater"
+import StatusBadge from "../../_components/recruiter/manage-jobs/StatusBadge"
+import ActionButtons from "../../_components/recruiter/manage-jobs/action-button"
 
-// Replace with backend API response
-const jobPosts = mockJobPosts
+export default async function ManageJobsPage() {
+    const session = await auth.api.getSession({
+        headers: await headers(),
+    })
 
-const CURRENCY = "€"
+    // Authentication check
+    if (!session?.user?.email) {
+        redirect("/login")
+    }
 
-const JOB_TYPE_LABEL: Record<ManageJobPost[ "jobType" ], string> = {
-    "full-time": "Full-Time",
-    "part-time": "Part-Time",
-    contract: "Contract",
-    internship: "Internship",
-}
-
-const SALARY_FREQUENCY_LABEL: Record<
-    ManageJobPost[ "salaryFrequency" ],
-    string
-> = {
-    hourly: "hour",
-    monthly: "month",
-    yearly: "year",
-}
-
-
-
-
-function formatSalary(job: ManageJobPost) {
-    return `${CURRENCY}${job.minSalary} – ${CURRENCY}${job.maxSalary} / ${SALARY_FREQUENCY_LABEL[ job.salaryFrequency ]}`
-}
-
-
-
-
-// Reusable section label
-function InfoLabel({ children }: { children: React.ReactNode }) {
-    return (
-        <dt className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-            {children}
-        </dt>
+    // Fetch recruiter jobs
+    const jobsData: ManageJobPost[] = await getJobs(
+        session.user.email
     )
-}
 
-export default function ManageJobsPage() {
     return (
         <section className="mx-auto w-full max-w-7xl space-y-6 px-3 py-4 sm:space-y-8 sm:px-5 lg:px-8">
 
@@ -67,7 +37,9 @@ export default function ManageJobsPage() {
                 <span className="text-muted-foreground">
                     Manage Jobs
                 </span>
+
                 <span className="text-border">/</span>
+
                 <span className="font-medium text-foreground">
                     Job Listings & Postings
                 </span>
@@ -75,7 +47,6 @@ export default function ManageJobsPage() {
 
             {/* Header */}
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-
                 <div className="min-w-0 space-y-2">
                     <h1 className="text-2xl font-bold tracking-tight sm:text-3xl lg:text-4xl">
                         Manage Job Posts
@@ -91,107 +62,61 @@ export default function ManageJobsPage() {
                     size="lg"
                     className="w-full shrink-0 bg-brand text-brand-foreground hover:bg-brand/90 sm:w-auto"
                 >
-                    <PlusIcon className="size-4" />
-                    New Job Post
+                    <Link href="/recruiter/new">
+                        <PlusIcon className="size-4" />
+                        New Job Post
+                    </Link>
                 </Button>
             </div>
 
-            {/* Desktop / Tablet Table */}
-            <div className="hidden overflow-hidden rounded-xl border border-border bg-card md:block">
-
-                <div className="w-full overflow-x-auto">
-                    <table className="w-full min-w-[850px] text-left text-sm">
-
-                        <thead>
-                            <tr className="border-b border-border bg-muted/30">
-                                <th className="px-4 py-4 font-medium text-muted-foreground lg:px-5">
-                                    Job Title
+            {/* Jobs Table / Empty State */}
+            {jobsData.length > 0 ? (
+                <div className="overflow-x-auto rounded-xl border border-border">
+                    <table className="w-full text-sm">
+                        <thead className="bg-muted/50">
+                            <tr className="border-b">
+                                <th className="px-4 py-3 text-left">
+                                    Job
                                 </th>
 
-                                <th className="px-4 py-4 font-medium text-muted-foreground lg:px-5">
-                                    Company
-                                </th>
-
-                                <th className="hidden px-4 py-4 font-medium text-muted-foreground lg:table-cell">
-                                    Type
-                                </th>
-
-                                <th className="hidden px-4 py-4 font-medium text-muted-foreground xl:table-cell">
-                                    Salary
-                                </th>
-
-                                <th className="px-4 py-4 font-medium text-muted-foreground">
-                                    Applicants
-                                </th>
-
-                                <th className="px-4 py-4 font-medium text-muted-foreground">
+                                <th className="px-4 py-3 text-left">
                                     Status
                                 </th>
 
-                                <th className="hidden px-4 py-4 font-medium text-muted-foreground xl:table-cell">
-                                    Deadline
+                                <th className="px-4 py-3 text-left">
+                                    Location
                                 </th>
 
-                                <th className="px-4 py-4 text-right font-medium text-muted-foreground">
+                                <th className="px-4 py-3 text-left">
+                                    Applicants
+                                </th>
+
+                                <th className="px-4 py-3 text-right">
                                     Actions
                                 </th>
                             </tr>
                         </thead>
 
                         <tbody>
-                            {jobPosts.map((job) => (
+                            {jobsData.map((job) => (
                                 <tr
-                                    key={job.id}
-                                    className="border-b border-border transition-colors last:border-0 hover:bg-muted/30"
+                                    key={job._id}
+                                    className="border-b last:border-0"
                                 >
-                                    {/* Job Title */}
-                                    <td className="px-4 py-4 lg:px-5">
-                                        <div className="flex min-w-[180px] items-center gap-3">
+                                    {/* Job Info */}
+                                    <td className="px-4 py-4">
+                                        <div className="flex items-center gap-3">
                                             <JobAvatar job={job} />
 
-                                            <div className="min-w-0">
-                                                <p className="truncate font-semibold text-foreground">
+                                            <div>
+                                                <p className="font-medium">
                                                     {job.jobTitle}
                                                 </p>
 
-                                                <p className="mt-1 truncate text-xs text-muted-foreground">
-                                                    {job.department}
+                                                <p className="text-xs text-muted-foreground">
+                                                    {job.company}
                                                 </p>
                                             </div>
-                                        </div>
-                                    </td>
-
-                                    {/* Company */}
-                                    <td className="px-4 py-4">
-                                        <p className="font-medium text-foreground">
-                                            {job.company}
-                                        </p>
-
-                                        <p className="mt-1 flex items-center gap-1 text-xs text-muted-foreground">
-                                            <MapPinIcon className="size-3" />
-                                            {job.jobLocation}
-                                        </p>
-                                    </td>
-
-                                    {/* Type */}
-                                    <td className="hidden px-4 py-4 lg:table-cell">
-                                        <Badge variant="outline">
-                                            {JOB_TYPE_LABEL[ job.jobType ]}
-                                        </Badge>
-                                    </td>
-
-                                    {/* Salary */}
-                                    <td className="hidden px-4 py-4 font-medium whitespace-nowrap xl:table-cell">
-                                        {formatSalary(job)}
-                                    </td>
-
-                                    {/* Applicants */}
-                                    <td className="px-4 py-4">
-                                        <div className="flex items-center gap-2 whitespace-nowrap text-muted-foreground">
-                                            <UsersIcon className="size-4" />
-                                            <span>
-                                                {job.applicants}
-                                            </span>
                                         </div>
                                     </td>
 
@@ -200,126 +125,26 @@ export default function ManageJobsPage() {
                                         <StatusBadge status={job.status} />
                                     </td>
 
-                                    {/* Deadline */}
-                                    <td className="hidden px-4 py-4 xl:table-cell">
-                                        <p className="font-medium">
-                                            {job.deadline}
-                                        </p>
+                                    {/* Location */}
+                                    <td className="px-4 py-4">
+                                        {job.jobLocation}
+                                    </td>
 
-                                        <p className="mt-1 text-xs text-muted-foreground">
-                                            {job.postedAgo}
-                                        </p>
+                                    {/* Applicants */}
+                                    <td className="px-4 py-4">
+                                        {job.applicants}
                                     </td>
 
                                     {/* Actions */}
-                                    <td className="px-4 py-4">
-                                        <div className="flex justify-end">
-                                            <ActionButtons job={job} />
-                                        </div>
+                                    <td className="px-4 py-4 text-right">
+                                        <ActionButtons job={job} />
                                     </td>
                                 </tr>
                             ))}
                         </tbody>
                     </table>
                 </div>
-            </div>
-
-            {/* Mobile Cards */}
-            <div className="space-y-3 md:hidden">
-
-                {jobPosts.map((job) => (
-                    <article
-                        key={job.id}
-                        className="overflow-hidden rounded-xl border border-border bg-card"
-                    >
-
-                        {/* Card Header */}
-                        <div className="flex items-start justify-between gap-3 p-4">
-
-                            <div className="flex min-w-0 items-center gap-3">
-                                <JobAvatar job={job} />
-
-                                <div className="min-w-0">
-                                    <h3 className="truncate font-semibold text-foreground">
-                                        {job.jobTitle}
-                                    </h3>
-
-                                    <p className="mt-1 truncate text-xs text-muted-foreground">
-                                        {job.department}
-                                    </p>
-                                </div>
-                            </div>
-
-                            <StatusBadge status={job.status} />
-                        </div>
-
-                        {/* Company Info */}
-                        <div className="space-y-2 border-t border-border px-4 py-3">
-
-                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                <Building2Icon className="size-4 shrink-0" />
-                                <span className="truncate text-foreground">
-                                    {job.company}
-                                </span>
-                            </div>
-
-                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                <MapPinIcon className="size-4 shrink-0" />
-                                <span className="truncate">
-                                    {job.jobLocation}
-                                </span>
-                            </div>
-                        </div>
-
-                        {/* Details Grid */}
-                        <dl className="grid grid-cols-2 gap-x-4 gap-y-4 border-t border-border bg-muted/20 px-4 py-4">
-
-                            <div className="space-y-1">
-                                <InfoLabel>Salary</InfoLabel>
-                                <dd className="text-sm font-medium text-foreground">
-                                    {formatSalary(job)}
-                                </dd>
-                            </div>
-
-                            <div className="space-y-1">
-                                <InfoLabel>Applicants</InfoLabel>
-                                <dd className="flex items-center gap-1.5 text-sm font-medium text-foreground">
-                                    <UsersIcon className="size-4 text-muted-foreground" />
-                                    {job.applicants} candidates
-                                </dd>
-                            </div>
-
-                            <div className="space-y-1">
-                                <InfoLabel>Job Type</InfoLabel>
-                                <dd className="text-sm font-medium text-foreground">
-                                    {JOB_TYPE_LABEL[ job.jobType ]}
-                                </dd>
-                            </div>
-
-                            <div className="space-y-1">
-                                <InfoLabel>Deadline</InfoLabel>
-                                <dd className="flex items-center gap-1.5 text-sm font-medium text-foreground">
-                                    <CalendarDaysIcon className="size-4 text-muted-foreground" />
-                                    {job.deadline}
-                                </dd>
-                            </div>
-                        </dl>
-
-                        {/* Card Footer */}
-                        <div className="flex items-center justify-between border-t border-border px-4 py-2.5">
-
-                            <span className="text-xs text-muted-foreground">
-                                Posted {job.postedAgo}
-                            </span>
-
-                            <ActionButtons job={job} />
-                        </div>
-                    </article>
-                ))}
-            </div>
-
-            {/* Empty State */}
-            {jobPosts.length === 0 && (
+            ) : (
                 <div className="rounded-xl border border-dashed border-border px-5 py-16 text-center">
                     <div className="mx-auto mb-4 flex size-12 items-center justify-center rounded-xl bg-muted">
                         <Building2Icon className="size-6 text-muted-foreground" />
@@ -333,9 +158,13 @@ export default function ManageJobsPage() {
                         Create your first job post to get started.
                     </p>
 
-                    <Button className="mt-5 bg-brand text-brand-foreground hover:bg-brand/90">
-                        <PlusIcon />
-                        Create Job Post
+                    <Button
+                        className="mt-5 bg-brand text-brand-foreground hover:bg-brand/90"
+                    >
+                        <Link href="/recruiter/new">
+                            <PlusIcon className="size-4" />
+                            Create Job Post
+                        </Link>
                     </Button>
                 </div>
             )}

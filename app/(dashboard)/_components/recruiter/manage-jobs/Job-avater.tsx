@@ -1,4 +1,4 @@
-import { ManageJobPost } from "@/app/(dashboard)/recruiter/manage-jobs/data";
+import { ManageJobPost } from "@/Typescript/main";
 
 // Job Avatar
 export default function JobAvatar({ job }: { job: ManageJobPost }) {
