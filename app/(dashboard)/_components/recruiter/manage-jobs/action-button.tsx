@@ -1,4 +1,6 @@
-import { ManageJobPost } from "@/app/(dashboard)/recruiter/manage-jobs/data";
+"use client"
+
+import { ManageJobPost } from "@/Typescript/main";
 import { Button } from "@/components/ui/button";
 import { EyeIcon, PencilIcon, Trash2Icon } from "lucide-react";
 
@@ -12,7 +14,7 @@ export default function ActionButtons({ job }: { job: ManageJobPost }) {
                 className="size-8 text-muted-foreground hover:bg-muted hover:text-foreground"
                 aria-label={`View ${job.jobTitle}`}
                 title="View Details"
-                onClick={() => console.log("View:", job.id)}
+                onClick={() => console.log("View:", job._id)}
             >
                 <EyeIcon className="size-4" />
             </Button>
@@ -23,7 +25,7 @@ export default function ActionButtons({ job }: { job: ManageJobPost }) {
                 className="size-8 text-muted-foreground hover:bg-muted hover:text-brand"
                 aria-label={`Edit ${job.jobTitle}`}
                 title="Edit Job"
-                onClick={() => console.log("Edit:", job.id)}
+                onClick={() => console.log("Edit:", job._id)}
             >
                 <PencilIcon className="size-4" />
             </Button>
@@ -34,7 +36,7 @@ export default function ActionButtons({ job }: { job: ManageJobPost }) {
                 className="size-8 text-muted-foreground hover:bg-rose-500/10 hover:text-rose-500"
                 aria-label={`Delete ${job.jobTitle}`}
                 title="Delete Job"
-                onClick={() => console.log("Delete:", job.id)}
+                onClick={() => console.log("Delete:", job._id)}
             >
                 <Trash2Icon className="size-4" />
             </Button>

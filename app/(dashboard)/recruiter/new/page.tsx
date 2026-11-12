@@ -20,7 +20,7 @@ import SectionHeading from "../../_components/recruiter/sectiohHeading"
 import Field from "../../_components/recruiter/Feild"
 import { useSession } from "@/lib/auth-client"
 import { createJobs } from "@/lib/actions/jobs"
-import { JobType, SalaryFrequency } from "@/Typescript/mai"
+import { JobType, SalaryFrequency } from "@/Typescript/main"
 import { useRouter } from "next/navigation"
 
 const JOB_CATEGORIES: Record<string, string> = {

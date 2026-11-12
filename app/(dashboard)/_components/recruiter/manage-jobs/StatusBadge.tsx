@@ -1,4 +1,4 @@
-import { JobPostStatus } from "@/app/(dashboard)/recruiter/manage-jobs/data";
+import { JobPostStatus } from "@/Typescript/main";
 import { Badge } from "@/components/ui/badge";
 
 
