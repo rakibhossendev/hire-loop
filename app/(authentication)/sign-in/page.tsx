@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { useState } from "react"
 
 import {
@@ -40,6 +40,7 @@ function validate(values: typeof initialValues) {
 }
 
 export default function SignInPage() {
+  const searchParams = useSearchParams();
   const router = useRouter()
   const [values, setValues] = useState(initialValues)
   const [errors, setErrors] = useState<{
@@ -48,6 +49,8 @@ export default function SignInPage() {
   }>({})
   const [formError, setFormError] = useState<string | null>(null)
   const [pending, setPending] = useState(false)
+  const redirectTo = searchParams.get("redirectTo") ?? "/";
+
 
   function update(key: keyof typeof initialValues, value: string) {
     setValues((previous) => ({ ...previous, [key]: value }))
@@ -77,7 +80,7 @@ export default function SignInPage() {
         return
       }
 
-      router.push("/")
+      router.push(redirectTo)
     } catch {
       setFormError("Something went wrong. Please try again.")
     } finally {

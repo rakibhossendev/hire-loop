@@ -9,8 +9,12 @@ import {
   BarChart3,
 } from "lucide-react"
 
-import type { JobDetailType } from "@/Typescript/main"
+import type { ApplyJobsType, JobDetailType } from "@/Typescript/main"
 import { Button } from "@/components/ui/button"
+import { useSession } from "@/lib/auth-client"
+import { useRouter } from "next/navigation"
+import { applyJobs } from "@/lib/actions/apply-jobs"
+import { countApply } from "@/lib/actions/apply-count"
 
 function formatSalary(job: JobDetailType): string {
   const min = Number(job.minSalary)
@@ -54,11 +58,48 @@ function StatCard({
 }
 
 export function JobDetailHeader({ job }: { job: JobDetailType }) {
+  const { data: session } = useSession();
+  const router = useRouter()
   // TODO: save the job — logic is handled elsewhere.
-  function handleSave() {}
+  function handleSave() { }
 
   // TODO: apply to the job — logic is handled elsewhere.
-  function handleApply() {}
+  async function handleApply() {
+    if (!session?.user) {
+      alert("You need to signUp");
+      router.push(`/sign-in?redirectTo=/browse-jobs/${job._id}`);
+      return
+    }
+    else if (session.user.role === "seeker") {
+      const { count } = await countApply(`userid=${session.user.id}`);
+      
+      if (count >= 2) {
+        alert("Free apply is end. Now you need to payment")
+        router.push("/payment")
+        return
+      }
+      const applyData: ApplyJobsType = {
+        userId: session?.user.id,
+        userEmail: session?.user.email,
+        jobId: job._id,
+        jobTitle: job.jobTitle,
+        company: job.company,
+        jobCategory: job.jobCategory,
+        jobType: job.jobType,
+        remoteAllowed: job.remoteAllowed,
+        jobLocation: job.jobLocation
+      }
+
+      const data = await applyJobs(applyData);
+
+      if (!data.success) {
+        alert(data.message)
+        return
+      }
+      alert(data.message)
+    }
+
+  }
 
   return (
     <>

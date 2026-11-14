@@ -86,3 +86,15 @@ export interface GetJobDetailAPIResponseType {
   success: boolean
   data?: JobDetailType
 }
+
+export interface ApplyJobsType {
+    userId: string;
+    userEmail: string;
+    jobId: string;
+    jobTitle: string;
+    company: string;
+    jobCategory: string;
+    jobType: JobType;
+    remoteAllowed: boolean;
+    jobLocation: string;
+}
