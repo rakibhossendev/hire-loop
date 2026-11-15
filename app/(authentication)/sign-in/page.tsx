@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { useRouter, useSearchParams } from "next/navigation"
-import { useState } from "react"
+import { Suspense, useState } from "react"
 
 import {
   PasswordField,
@@ -39,8 +39,8 @@ function validate(values: typeof initialValues) {
   return errors
 }
 
-export default function SignInPage() {
-  const searchParams = useSearchParams();
+function SignInContent() {
+  const searchParams = useSearchParams()
   const router = useRouter()
   const [values, setValues] = useState(initialValues)
   const [errors, setErrors] = useState<{
@@ -49,8 +49,7 @@ export default function SignInPage() {
   }>({})
   const [formError, setFormError] = useState<string | null>(null)
   const [pending, setPending] = useState(false)
-  const redirectTo = searchParams.get("redirectTo") ?? "/";
-
+  const redirectTo = searchParams.get("redirectTo") ?? "/"
 
   function update(key: keyof typeof initialValues, value: string) {
     setValues((previous) => ({ ...previous, [key]: value }))
@@ -147,5 +146,17 @@ export default function SignInPage() {
         </CardFooter>
       </Card>
     </div>
+  )
+}
+
+export default function SignInPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex justify-center px-4 py-10" aria-hidden="true" />
+      }
+    >
+      <SignInContent />
+    </Suspense>
   )
 }
